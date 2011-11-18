@@ -47,6 +47,7 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('textInput')->end()
                             ->scalarNode('skipHours')->end()
                             ->scalarNode('skipDays')->end()
+                            ->scalarNode('encoding')->defaultValue('UTF-8')->end()
                         ->end()
                     ->end()
                 ->end()
