@@ -4,11 +4,13 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-    <!--
     <parameters>
+        <parameter key="funstaff_feed.factory.class">Funstaff\FeedBundle\Factory\Factory</parameter>
     </parameters>
 
     <services>
+        <service id="funstaff_feed.factory" class="%funstaff_feed.factory.class%">
+            <argument>%funstaff_feed.configuration%</argument>
+        </service>
     </services>
-    -->
 </container>
