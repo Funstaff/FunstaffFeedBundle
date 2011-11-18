@@ -94,7 +94,7 @@ interface FeedInterface
 
     function getEncoding();
 
-    function addItem(FeedItemInterface $item);
+    function addItem(FeedItemInterface $item, $routingName);
 
     function render();
 }

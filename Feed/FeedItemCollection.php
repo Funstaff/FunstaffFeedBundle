@@ -15,10 +15,14 @@ class FeedItemCollection
      * Add
      *
      * @param itemInterface $item
+     * @param string $routingName
      */
-    public function add($item)
+    public function add($item, $routingName)
     {
-        $this->collection[] = $item;
+        $this->collection[] = array(
+                                'item' => $item,
+                                'route' => $routingName
+                                );
     }
 
     /**

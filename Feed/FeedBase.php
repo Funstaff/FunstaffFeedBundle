@@ -277,12 +277,13 @@ class FeedBase implements FeedInterface
      * Add Item
      *
      * @param ItemInterface $item
+     * @param string $routingName
      *
      * @return $this
      */
-    public function addItem(FeedItemInterface $item)
+    public function addItem(FeedItemInterface $item, $routingName)
     {
-        $this->collection->add($item);
+        $this->collection->add($item, $routingName);
 
         return $this;
     }
@@ -291,13 +292,14 @@ class FeedBase implements FeedInterface
      * Add Items
      *
      * @param array $items
+     * @param string $routingName
      *
      * @return $this
      */
-    public function addItems($items)
+    public function addItems($items, $routingName)
     {
         foreach ($items as $item) {
-            $this->addItem($item);
+            $this->addItem($item, $routingName);
         }
 
         return $this;
