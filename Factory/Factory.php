@@ -44,8 +44,11 @@ class Factory
         }
 
         $class = sprintf('feed%s', ucfirst($version));
+        if (!array_key_exists($class, $this->config['classes'])) {
+            throw new \InvalidArgumentException('Invalid feed class');
+        }
         $feed = $this->config['classes'][$class];
 
-        return new $feed();
+        return new $feed($this->config['channels'][$name]);
     }
 }
