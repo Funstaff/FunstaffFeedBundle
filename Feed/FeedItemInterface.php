@@ -2,14 +2,12 @@
 
 namespace Funstaff\FeedBundle\Feed;
 
-use Funstaff\FeedBundle\Feed\FeedBase;
-
 /**
- * Feed201
+ * FeedItemInterface
  *
  * @author Bertrand Zuchuat <bertrand.zuchuat@gmail.com>
  */
-class Feed201 extends FeedBase
+interface FeedItemInterface
 {
-    protected $version = '2.01';
+    
 }

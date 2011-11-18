@@ -11,6 +11,7 @@
     <services>
         <service id="funstaff_feed.factory" class="%funstaff_feed.factory.class%">
             <argument>%funstaff_feed.configuration%</argument>
+            <argument type="service" id="router" />
         </service>
     </services>
 </container>
