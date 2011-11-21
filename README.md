@@ -18,9 +18,15 @@ Configuration
                 webMaster:      ~
                 pubDate:        ~
                 lastBuildDate:  ~
-                category:       ~
+                category:       [cat1, cat2, cat3]
                 docs:           ~
-                cloud:          ~
+                cloud:          [
+                                    domain: "rpc.sys.com"
+                                    port: "80"
+                                    path: "/RPC2"
+                                    registerProcedure: "pingMe"
+                                    protocol="soap"
+                                ]
                 ttl:            ~
                 rating:         ~
                 image:          ~
