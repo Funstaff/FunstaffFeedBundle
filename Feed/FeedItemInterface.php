@@ -9,5 +9,9 @@ namespace Funstaff\FeedBundle\Feed;
  */
 interface FeedItemInterface
 {
-    
+    function getFeedTitle();
+
+    function getFeedLink();
+
+    function getFeedDescription();
 }
