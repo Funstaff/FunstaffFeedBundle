@@ -71,6 +71,12 @@ class FeedBase implements FeedInterface
         $this->renderer = $renderer;
         $this->collection = new FeedItemCollection();
         $this->addInfos($channel);
+        unset($channel['encoding']);
+    }
+
+    public function getChannel()
+    {
+        return $this->channel;
     }
 
     public function setTitle($title)
@@ -271,6 +277,11 @@ class FeedBase implements FeedInterface
     public function getEncoding()
     {
         return $this->encoding;
+    }
+
+    public function getCollection()
+    {
+        return $this->collection;
     }
 
     /**

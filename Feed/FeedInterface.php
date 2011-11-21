@@ -14,6 +14,8 @@ interface FeedInterface
 {
     function __construct($channel, RendererInterface $renderer);
 
+    function getChannel();
+
     function setTitle($title);
 
     function getTitle();
@@ -93,6 +95,8 @@ interface FeedInterface
     function setEncoding($encoding);
 
     function getEncoding();
+
+    function getCollection();
 
     function addItem(FeedItemInterface $item, $routingName);
 
