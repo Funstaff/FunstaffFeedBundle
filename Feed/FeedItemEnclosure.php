@@ -11,13 +11,13 @@ class FeedItemEnclosure
 {
     protected $url;
 
-    protected $length;
+    protected $length = 0;
 
     protected $type;
 
     public function setUrl($url)
     {
-        $this->url;
+        $this->url = $url;
     }
 
     public function getUrl()
@@ -32,7 +32,7 @@ class FeedItemEnclosure
 
     public function getLength()
     {
-        return $this->length;
+        return (int) $this->length;
     }
 
     public function setType($type)
