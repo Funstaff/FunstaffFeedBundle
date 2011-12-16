@@ -5,6 +5,11 @@ namespace Funstaff\FeedBundle\Renderer;
 use Funstaff\FeedBundle\Renderer\RendererBase;
 use Funstaff\FeedBundle\Renderer\RendererInterface;
 use Funstaff\FeedBundle\Feed\FeedInterface;
+use Funstaff\FeedBundle\Feed\FeedItemCategory;
+use Funstaff\FeedBundle\Feed\FeedItemCategoryCollection;
+use Funstaff\FeedBundle\Feed\FeedItemEnclosure;
+use Funstaff\FeedBundle\Feed\FeedItemGuid;
+use Funstaff\FeedBundle\Feed\FeedItemSource;
 
 /**
  * RendererRss
@@ -13,6 +18,14 @@ use Funstaff\FeedBundle\Feed\FeedInterface;
  */
 class RendererRss extends RendererBase implements RendererInterface
 {
+    /**
+     * Render
+     * 
+     * @param FeedInterface $feed;
+     * @param string $version;
+     * 
+     * @return string xml
+     */
     public function render(FeedInterface $feed, $version)
     {
         $base = sprintf(
@@ -23,23 +36,36 @@ class RendererRss extends RendererBase implements RendererInterface
         $element = new \SimpleXmlElement($base);
         $element->addAttribute('version', $version);
 
+        $element = $this->setChannelInformation($feed, $element);
+        $element = $this->setItemInformation($feed, $element);
+
+        return $element->asXml();
+    }
+
+    /**
+     * Set Channel Information
+     * 
+     * @param FeedInterface $feed
+     * @param SimpleXml $element
+     * 
+     * @return SimpleXml
+     */
+    public function setChannelInformation($feed, $element)
+    {
         /* Add Header informations */
         foreach ($feed->getChannel() as $key => $value) {
             switch($key) {
                 case 'category':
+                case 'textInput':
                     if (is_array($value) && count($value) > 0) {
-                        foreach ($value as $category) {
-                            $element->addChild($key, $category);
-                        }
+                        $this->populateChild($element, $key, $value);
                     }
                 break;
 
                 case 'cloud':
-                    if (is_array($value)) {
-                        $node = $element->addChild($key);
-                        foreach ($value as $k => $v) {
-                            $node->addAttribute($k, $v);
-                        }
+                case 'image':
+                    if (is_array($value) && count($value) > 0) {
+                        $this->populateAttribute($element, $key, $value);
                     }
                 break;
 
@@ -49,6 +75,19 @@ class RendererRss extends RendererBase implements RendererInterface
             }
         }
 
+        return $element;
+    }
+
+    /**
+     * Set Item Information
+     * 
+     * @param FeedInterface $feed
+     * @param SimpleXml $element
+     * 
+     * @return SimpleXml
+     */
+    public function setItemInformation($feed, $element)
+    {
         /* Add Item */
         foreach ($feed->getCollection()->get() as $record) {
             $item = $record['item'];
@@ -60,37 +99,54 @@ class RendererRss extends RendererBase implements RendererInterface
 
             $rc = new \ReflectionClass($item);
 
+            /* Category */
             if ($rc->hasMethod('getFeedCategory')) {
-                foreach ($item->getFeedCategory() as $category) {
-                    $node->addChild('category', $item->getFeedCategory());
+                $category = $item->getFeedCategory();
+                if ($category instanceOf FeedItemCategory) {
+                    $cat = $node->addChild('category', $category->getCategory());
+                    if (null != $category->getDomain()) {
+                        $cat->addAttribute('domain', $category->getDomain());
+                    }
+                }
+
+                if ($category instanceOf FeedItemCategoryCollection) {
+                    foreach ($category as $fcategory) {
+                        $cat = $node->addChild('category', $fcategory->getCategory());
+                        if (null != $fcategory->getDomain()) {
+                            $cat->addAttribute('domain', $fcategory->getDomain());
+                        }
+                    }
                 }
             }
 
+            /* Enclosure */
             if ($rc->hasMethod('getFeedEnclosure')) {
-                $attributes = $item->getFeedEnclosure();
-                $enclosure = $node->addChild('enclosure');
-                foreach ($attributes as $key => $value) {
-                    $enclosure->addAttribute($key, $value);
+                $enclosure = $item->getFeedEnclosure();
+                if ($enclosure instanceOf FeedItemEnclosure) {
+                    $enc = $node->addChild('enclosure');
+                    $enc->addAttribute('url', $enclosure->getUrl());
+                    $enc->addAttribute('length', $enclosure->getLength());
+                    $enc->addAttribute('type', $enclosure->getType());
                 }
             }
 
+            /* Guid */
             if ($rc->hasMethod('getFeedGuid')) {
-                $content = $item->getFeedGuid();
-                if (is_array($content)) {
-                    $guid = $node->addChild('guid', $content['value']);
-                    $guid->addAttribute('isPermaLink', $content['isPermaLink']);
-                } else {
-                    $node->addChild('guid', $content);
+                $guid = $item->getFeedGuid();
+                if ($guid instanceOf FeedItemGuid) {
+                    $gu = $node->addChild('guid', $guid->getLink());
+                    if ($guid->isPermalink()) {
+                        $gu->addAttribute('isPermaLink', $guid->isPermalink());
+                    }
                 }
             }
 
+            /* Source */
             if ($rc->hasMethod('getFeedSource')) {
-                $content = $item->getFeedSource();
-                if (is_array($content)) {
-                    $source = $node->addChild('source', $content['value']);
-                    $source->addAttribute('url', $content['url']);
-                } else {
-                    $node->addChild('guid', $content);
+                $source = $item->getFeedSource();
+                if ($source instanceOf FeedItemSource) {
+                    $so = $node->addChild('source', $source->getTitle());
+                    $so->addAttribute('url', $source->getUrl());
                 }
             }
 
@@ -105,6 +161,6 @@ class RendererRss extends RendererBase implements RendererInterface
             }
         }
 
-        return $element->asXml();
+        return $element;
     }
 }
